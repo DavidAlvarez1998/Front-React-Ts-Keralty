@@ -6,8 +6,15 @@ import AddUserModal from './modals/usuario/AddUserModal';
 import AddStudyModal from './modals/estudio/AddStudyModal';
 import ConfirmDeleteModal from './modals/ConfirmDeleteModal';
 import { useState } from 'react';
-import { createUser, deleteUser, updateUser, UserRequest, UserResponse } from '../services/userService';
-import { createStudy, deleteStudy, updateStudy, StudyRequest, StudyResponse } from '../services/studyService';
+import { createUser, deleteUser, getAllUsers, updateUser, UserRequest, UserResponse } from '../services/userService';
+import {
+    createStudy,
+    deleteStudy,
+    updateStudy,
+    StudyRequest,
+    StudyResponse,
+    getAllStudies,
+} from '../services/studyService';
 import EditUserModal from './modals/usuario/EditUserModal';
 import EditStudyModal from './modals/estudio/EditStudyModal';
 
@@ -26,6 +33,8 @@ interface ButtonWithListProps {
     newStudyCreated?: (newStudy: StudyResponse) => void;
     handleUserDeleted?: (userId: number | null) => void;
     handleStudyDeleted?: (study: number | null) => void;
+    updateUsuario?: (listUsuarios: UserResponse[]) => void;
+    updateEstudios?: (listEstudios: StudyResponse[]) => void;
 }
 
 const ButtonWithList = ({
@@ -43,6 +52,8 @@ const ButtonWithList = ({
     newStudyCreated,
     handleUserDeleted,
     handleStudyDeleted,
+    updateUsuario,
+    updateEstudios,
 }: ButtonWithListProps) => {
     // Modales para agregar
     const [openAddUserModal, setOpenAddUserModal] = useState(false);
@@ -165,6 +176,8 @@ const ButtonWithList = ({
         try {
             await updateUser(updatedUser.usuarioId, updatedUser);
             setSnackbarMessage(`Usuario con id: ${updatedUser.usuarioId} actualizado con éxito`);
+            const newListUsers = await getAllUsers();
+            updateUsuario?.(newListUsers);
             setSnackbarSeverity('success');
             setOpenSnackbar(true);
         } catch (e) {
@@ -189,6 +202,8 @@ const ButtonWithList = ({
         try {
             await updateStudy(updatedStudy.estudioId, updatedStudy);
             setSnackbarMessage(`Estudio con id: ${updatedStudy.estudioId} actualizado con éxito`);
+            const newListStudys = await getAllStudies();
+            updateEstudios?.(newListStudys);
             setSnackbarSeverity('success');
             setOpenSnackbar(true);
         } catch (e) {
@@ -225,12 +240,20 @@ const ButtonWithList = ({
                         <>
                             {/* Botón para agregar (usuario o estudio) */}
                             {titulo === 'Usuarios' && (
-                                <IconButton color="primary" size="small" onClick={handleOpenAddUserModal}>
+                                <IconButton
+                                    sx={{ color: '#22C55E' }} // Verde
+                                    size="small"
+                                    onClick={handleOpenAddUserModal}
+                                >
                                     <PersonAddIcon />
                                 </IconButton>
                             )}
                             {titulo === 'Estudios' && (
-                                <IconButton color="secondary" size="small" onClick={handleOpenAddStudyModal}>
+                                <IconButton
+                                    sx={{ color: '#F97316' }} // Naranja
+                                    size="small"
+                                    onClick={handleOpenAddStudyModal}
+                                >
                                     <AddBoxIcon />
                                 </IconButton>
                             )}

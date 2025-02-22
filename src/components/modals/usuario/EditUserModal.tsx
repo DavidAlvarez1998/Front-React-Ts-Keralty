@@ -17,7 +17,7 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ open, close, user, save }
     const [celular, setCelular] = useState('');
     const [estado, setEstado] = useState('');
 
-    // Cuando cambie "user", rellenamos los campos
+    // Al montar o cambiar "user", rellenamos los campos
     useEffect(() => {
         if (user) {
             setNombres(user.nombres);
@@ -28,9 +28,20 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ open, close, user, save }
         }
     }, [user]);
 
+    // Validaciones
+    const isNombresValid = nombres.length >= 3 && nombres.length <= 50;
+    const isApellidosValid = apellidos.length >= 3 && apellidos.length <= 50;
+    const isEmailValid = email.includes('@') && email.includes('.');
+    const isCelularValid = celular.length >= 10 && celular.length <= 15;
+
+    // Form válido si todos los obligatorios son válidos
+    const isFormValid = isNombresValid && isApellidosValid && isEmailValid && isCelularValid;
+
+    // Manejo de guardar
     const handleSave = () => {
         if (!user) return;
-        // Llamamos save con los nuevos datos
+        if (!isFormValid) return; // Seguridad adicional
+
         save({
             ...user, // copiamos el id, etc.
             nombres,
@@ -42,6 +53,7 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ open, close, user, save }
         close();
     };
 
+    // Manejo de cerrar
     const handleClose = () => {
         close();
     };
@@ -51,6 +63,7 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ open, close, user, save }
             <DialogTitle>Editar Usuario</DialogTitle>
 
             <DialogContent>
+                {/* Campo Nombres */}
                 <TextField
                     margin="dense"
                     label="Nombres"
@@ -58,7 +71,11 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ open, close, user, save }
                     fullWidth
                     value={nombres}
                     onChange={e => setNombres(e.target.value)}
+                    error={!!nombres && !isNombresValid}
+                    helperText={!!nombres && !isNombresValid ? 'Los nombres deben tener entre 3 y 50 caracteres' : ''}
                 />
+
+                {/* Campo Apellidos */}
                 <TextField
                     margin="dense"
                     label="Apellidos"
@@ -66,7 +83,13 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ open, close, user, save }
                     fullWidth
                     value={apellidos}
                     onChange={e => setApellidos(e.target.value)}
+                    error={!!apellidos && !isApellidosValid}
+                    helperText={
+                        !!apellidos && !isApellidosValid ? 'Los apellidos deben tener entre 3 y 50 caracteres' : ''
+                    }
                 />
+
+                {/* Campo Email */}
                 <TextField
                     margin="dense"
                     label="Email"
@@ -74,7 +97,11 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ open, close, user, save }
                     fullWidth
                     value={email}
                     onChange={e => setEmail(e.target.value)}
+                    error={!!email && !isEmailValid}
+                    helperText={!!email && !isEmailValid ? 'Debe ser una dirección de correo válida' : ''}
                 />
+
+                {/* Campo Celular */}
                 <TextField
                     margin="dense"
                     label="Celular"
@@ -82,10 +109,14 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ open, close, user, save }
                     fullWidth
                     value={celular}
                     onChange={e => setCelular(e.target.value)}
+                    error={!!celular && !isCelularValid}
+                    helperText={!!celular && !isCelularValid ? 'El celular debe tener entre 10 y 15 caracteres' : ''}
                 />
+
+                {/* Campo Estado (opcional) */}
                 <TextField
                     margin="dense"
-                    label="Estado"
+                    label="Estado (opcional)"
                     type="text"
                     fullWidth
                     value={estado}
@@ -95,7 +126,12 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ open, close, user, save }
 
             <DialogActions>
                 <Button onClick={handleClose}>Cancelar</Button>
-                <Button variant="contained" color="primary" onClick={handleSave}>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleSave}
+                    disabled={!isFormValid} // Botón deshabilitado si el form no es válido
+                >
                     Guardar
                 </Button>
             </DialogActions>

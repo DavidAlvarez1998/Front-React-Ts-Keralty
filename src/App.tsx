@@ -102,6 +102,14 @@ const App = () => {
             tituloPrincipal = `Usuario: ${usuarioActual.nombres} ${usuarioActual.apellidos} - Estudios: ${estudios.length}`;
         }
     }
+    //update usuarios
+    const updateUsuario = (listUsuarios: UserResponse[]) => {
+        setUsuarios(listUsuarios);
+    };
+    //update estudios
+    const updateEstudios = (listEstudios: StudyResponse[]) => {
+        setEstudios(listEstudios);
+    };
 
     return (
         <div
@@ -124,11 +132,12 @@ const App = () => {
                     cargando={cargandoUsuarios}
                     error={errorUsuarios}
                     alAlternar={alternarUsuarios}
-                    colorBoton="#3B82F6"
-                    colorHover="#2563EB"
+                    colorBoton="#22C55E" // Verde
+                    colorHover="#16A34A" // Verde más oscuro para hover
                     clicElemento={manejarClicUsuario}
                     newUserCreated={handleAddNewUser}
                     handleUserDeleted={handleUserDeleted}
+                    updateUsuario={updateUsuario}
                 />
 
                 {/* Botón + Lista de Estudios */}
@@ -139,10 +148,11 @@ const App = () => {
                     cargando={cargandoEstudios}
                     error={errorEstudios}
                     alAlternar={alternarEstudios}
-                    colorBoton="#8B5CF6"
-                    colorHover="#7C3AED"
+                    colorBoton="#F97316" // Naranja
+                    colorHover="#EA580C" // Naranja más oscuro para hover
                     newStudyCreated={handleAddNewStudy}
                     handleStudyDeleted={handleStudyDeleted}
+                    updateEstudios={updateEstudios}
                 />
             </div>
         </div>
